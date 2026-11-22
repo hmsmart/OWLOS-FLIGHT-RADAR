@@ -24,6 +24,7 @@ static int s_started, s_have_ssid;
 static SemaphoreHandle_t s_lock;
 static nets_t s_nets;
 static int    s_at;
+static int    s_fast_attempts;
 static char   s_name[33];
 
 /* looking round for networks, for the screen's WiFi page. the driver will not look while it is
@@ -78,7 +79,7 @@ static void scan_collect(int ok)
 }
 
 // the driver joins this one from now on. false: it is in the middle of something, nothing changed
-static int apply(int at)
+static int apply(int at, const wifi_join_hint_t *hint)
 {
     static wifi_config_t wc;                          // off the stack: the event task comes here too, see scan_collect
     const net_kept_t *n = &s_nets.n[at];
@@ -92,20 +93,30 @@ static int apply(int at)
      * one far off (-85 dBm) with another 3 m away (-47 dBm) */
     wc.sta.scan_method = WIFI_ALL_CHANNEL_SCAN;
     wc.sta.sort_method = WIFI_CONNECT_AP_BY_SIGNAL;
+    if (hint && strcmp(n->ssid, hint->ssid) == 0) {
+        wc.sta.scan_method = WIFI_FAST_SCAN;
+        wc.sta.channel = hint->channel;
+    }
     s_have_ssid = n->ssid[0] != 0;
     if (esp_wifi_set_config(WIFI_IF_STA, &wc) != ESP_OK) return 0;
+    s_fast_attempts = wc.sta.scan_method == WIFI_FAST_SCAN ? 2 : 0;
     s_why = WHY_NONE;                                 // a new network: nothing known about it yet
     s_at = at;
     memcpy(s_name, n->ssid, sizeof s_name);
     return 1;
 }
 
-/* this one did not answer: on to the next, round and round, and the one in reach comes up. with
- * one network nothing changes */
+/* Retry the saved channel once, then scan all APs for the same SSID before rotating networks. */
 static void next_network(void)
 {
     xSemaphoreTake(s_lock, portMAX_DELAY);
-    if (s_nets.count > 1 && apply((s_at + 1) % s_nets.count)) ESP_LOGI(TAG, "on to network \"%s\"", s_name);
+    if (s_fast_attempts > 1) {
+        --s_fast_attempts;
+    } else if (s_fast_attempts) {
+        if (apply(s_at, NULL)) ESP_LOGI(TAG, "retrying \"%s\" with a full scan", s_name);
+    } else if (s_nets.count > 1 && apply((s_at + 1) % s_nets.count, NULL)) {
+        ESP_LOGI(TAG, "on to network \"%s\"", s_name);
+    }
     xSemaphoreGive(s_lock);
 }
 
@@ -121,6 +132,15 @@ static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data)
         ESP_LOGI(TAG, "WiFi station set to b/g/n, 20 MHz, modem sleep off, TX limit %d quarter-dBm", (int)tx_power);
 #endif
         if (s_have_ssid) esp_wifi_connect();
+#if RADAR_DISPLAY == DISPLAY_WAVE128_240x240
+    } else if (base == WIFI_EVENT && id == WIFI_EVENT_STA_CONNECTED) {
+        const wifi_event_sta_connected_t *ap = data;
+        wifi_join_hint_t hint = { .channel = ap->channel };
+        if (ap->ssid_len <= sizeof ap->ssid && hint.channel >= 1 && hint.channel <= 13) {
+            memcpy(hint.ssid, ap->ssid, ap->ssid_len);
+            store_save_wifi_hint(&hint);
+        }
+#endif
     } else if (base == WIFI_EVENT && id == WIFI_EVENT_STA_DISCONNECTED) {
         s_up = 0;
         s_ip[0] = 0;
@@ -130,7 +150,7 @@ static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data)
         s_why = reason == WIFI_REASON_AUTH_FAIL || reason == WIFI_REASON_4WAY_HANDSHAKE_TIMEOUT ||
                 reason == WIFI_REASON_HANDSHAKE_TIMEOUT ? WHY_PASSWORD : WHY_NOT_FOUND;
         ESP_LOGW(TAG, "WiFi lost (reason %d), trying again", reason);
-        vTaskDelay(pdMS_TO_TICKS(2000));              // the event task waits, the router gets a breath
+        if (!s_fast_attempts) vTaskDelay(pdMS_TO_TICKS(2000));  // fall back immediately after a fast scan
         if (s_have_ssid && s_scan != SCAN_RUNNING) {
             if (reason != WIFI_REASON_ASSOC_LEAVE) next_network();   // that one is the board's own doing
             esp_wifi_connect();
@@ -217,8 +237,12 @@ void net_start(const nets_t *l)
 #if RADAR_DISPLAY == DISPLAY_WAVE128_240x240
     ESP_ERROR_CHECK(esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N));
     ESP_ERROR_CHECK(esp_wifi_set_bandwidth(WIFI_IF_STA, WIFI_BW_HT20));
+    wifi_join_hint_t hint;
+    apply(0, store_load_wifi_hint(&hint) ? &hint : NULL);
+    if (s_fast_attempts) ESP_LOGI(TAG, "WiFi fast connect on saved channel %u", hint.channel);
+#else
+    apply(0, NULL);
 #endif
-    apply(0);
     ESP_ERROR_CHECK(esp_wifi_start());
 #if RADAR_OVERLAY
     /* the Waveshare 7/7B (chipguyhere): no modem sleep. their antenna sits behind a 7" panel and its
@@ -235,7 +259,7 @@ void net_reconnect(const nets_t *l)
     xSemaphoreTake(s_lock, portMAX_DELAY);
     esp_wifi_disconnect();
     s_nets = *l;
-    apply(0);
+    apply(0, NULL);
     xSemaphoreGive(s_lock);
     if (s_have_ssid) esp_wifi_connect();
     ESP_LOGI(TAG, "WiFi settings changed, network \"%s\", %d kept", s_name, s_nets.count);

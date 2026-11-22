@@ -17,6 +17,12 @@ void store_save_secrets(const secrets_t *s);
 /* the networks it remembers: the first is the one in the secrets, the others are kept here */
 void store_load_nets(const secrets_t *s, nets_t *l);
 void store_save_nets(const nets_t *l);
+typedef struct {
+    char ssid[33];
+    uint8_t channel;
+} wifi_join_hint_t;
+int store_load_wifi_hint(wifi_join_hint_t *hint);
+void store_save_wifi_hint(const wifi_join_hint_t *hint);
 int  store_load_cal(touch_cal_t *cal);
 void store_save_cal(const touch_cal_t *cal);
 int  store_load_screen(void);                  // -1: never picked

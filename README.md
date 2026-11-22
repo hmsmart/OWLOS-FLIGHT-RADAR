@@ -67,6 +67,9 @@ The map under them comes from OpenStreetMap.
   pins come from Elecrow's examples and its V3.0 schematic. Its BOOT button is the screen's clock line, so
   the firmware does not read it.
 - **1.28" round** (Elecrow CrowPanel): ESP32-C3, GC9A01 240x240, capacitive touch.
+- **1.28" Waveshare ESP32-S3-LCD-1.28** (non-touch, SKU 26541): `wave128`. Round 240x240 GC9A01A,
+  16 MB flash and 2 MB quad PSRAM. Press BOOT to select the next plane, hold it to change range.
+  Configure WiFi and home over USB. Experimental, awaiting a hardware test. [Waveshare pinout](https://docs.waveshare.com/ESP32-S3-LCD-1.28)
 - **3.5" RPi LCD** (Waveshare RPi LCD (A) on the OWLOSAirQuality board): ESP32, ILI9486 480x320, no touch.
 - **5" M5Stack Tab5**: ESP32-P4 with an ESP32-C6 for the WiFi, 720x1280 IPS on MIPI-DSI turned to lie
   flat, capacitive touch, through Espressif's board package. Experimental, brought in by Paris Pitts
@@ -415,9 +418,9 @@ and a PC preview.
 - `firmware/BUILD.BAT <screen> [COMx]` builds one screen's firmware (and flashes it to COMx). Screens:
   `ili9341` (2.8" CYD, the default), `st7796` (3.5" CYD), `gc9a01` (round), `ili9486` (RPi LCD),
   `es3c28p`, `nmcydc5`, `crowadv28`, `crowadv50`, `crow50`, `jc8048w550`, `tab5`, `esp4827s043`, `crow70`,
-  `wave7`, `wave7b`, `jc8012`. Each screen has its own build folder and sdkconfig.
+  `wave7`, `wave7b`, `wave128`, `jc8012`. Each screen has its own build folder and sdkconfig.
 - `firmware/build.sh <screen> [port]` does the same on macOS and Linux for `wave7`, `wave7b`, `jc8012`,
-  `crow70` and `crow50`.
+  `crow70`, `crow50` and `wave128`.
 - `.github/workflows/pages.yml` builds them all in Espressif's ESP-IDF image and publishes the site
   with them on GitHub Pages, on every push to main.
 - The version is the first `## ` line of `CHANGES.md`: the firmware is built with it, and the site

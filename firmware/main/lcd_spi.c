@@ -19,7 +19,7 @@
 #include "freertos/task.h"
 #include "freertos/semphr.h"
 #include "esp_attr.h"
-#if LCD_CHIP_GC9A01
+#ifdef IOEX_ADDR
 #include "i2c_bus.h"
 #endif
 
@@ -237,7 +237,9 @@ static const init_cmd_t INIT[] = {
     { 0x29, 0, { 0 }, 20 },
 };
 #define CHIP "GC9A01"
+#endif
 
+#ifdef IOEX_ADDR
 /* PI4IOE5V6408 expander: backlight on, LCD and touch out of reset */
 static void expander_power_on(void)
 {
@@ -423,8 +425,17 @@ void disp_init(void)
         };
         ESP_ERROR_CHECK(ledc_channel_config(&ccfg));
     }
-#if LCD_CHIP_GC9A01
+#ifdef IOEX_ADDR
     expander_power_on();
+#elif PIN_LCD_RST >= 0
+    gpio_config_t rst = { .pin_bit_mask = 1ULL << PIN_LCD_RST, .mode = GPIO_MODE_OUTPUT };
+    ESP_ERROR_CHECK(gpio_config(&rst));
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_RST, 1));
+    vTaskDelay(pdMS_TO_TICKS(100));
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_RST, 0));
+    vTaskDelay(pdMS_TO_TICKS(100));
+    ESP_ERROR_CHECK(gpio_set_level(PIN_LCD_RST, 1));
+    vTaskDelay(pdMS_TO_TICKS(120));
 #endif
 #ifdef PIN_SD_CS
     // an SD slot on the screen's bus: its chip select up for good, or a card in it answers too

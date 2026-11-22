@@ -13,6 +13,7 @@ rem           tab5 (M5Stack Tab5 5", ESP32-P4)  esp4827s043 (ESP32-4827S043C 4.3
 rem           crow70 (Elecrow CrowPanel 7.0", ESP32-S3)
 rem           crow50 (Elecrow CrowPanel 5.0" plain, DIS07050H, ESP32-S3)
 rem           wave7 (Waveshare ESP32-S3-Touch-LCD-7)  wave7b (Waveshare ESP32-S3-Touch-LCD-7B, 1024x600)
+rem           wave128 (Waveshare ESP32-S3-LCD-1.28, non-touch)
 rem           jc8012 (Guition JC8012P4A1C 10.1", ESP32-P4)
 rem           epd400 (4.2" e-paper, S3)  epd792 (5.79" e-paper, S3)
 rem each display gets its own build folder and sdkconfig, so switching doesnt rebuild everything
@@ -43,8 +44,9 @@ if /i "%DISP%"=="crow50" (set NUM=18& set TARGET=esp32s3)
 if /i "%DISP%"=="wave7" (set NUM=15& set TARGET=esp32s3)
 if /i "%DISP%"=="wave7b" (set NUM=16& set TARGET=esp32s3)
 if /i "%DISP%"=="jc8012" (set NUM=17& set TARGET=esp32p4)
+if /i "%DISP%"=="wave128" (set NUM=19& set TARGET=esp32s3)
 if "%NUM%"=="" (
-  echo unknown display %DISP%, pick one of: ili9341 st7796 ili9486 gc9a01 es3c28p nmcydc5 crowadv28 crowadv50 crow50 jc8048w550 tab5 esp4827s043 crow70 wave7 wave7b jc8012 epd400 epd792
+  echo unknown display %DISP%, pick one of: ili9341 st7796 ili9486 gc9a01 es3c28p nmcydc5 crowadv28 crowadv50 crow50 jc8048w550 tab5 esp4827s043 crow70 wave7 wave7b wave128 jc8012 epd400 epd792
   exit /b 1
 )
 rem the CYD keeps the plain build folder and sdkconfig it always had

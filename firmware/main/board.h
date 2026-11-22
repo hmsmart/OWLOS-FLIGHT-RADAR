@@ -134,6 +134,23 @@
 #define CST816_ADDR    0x15
 #define PIN_BUTTON     9        // BOOT on the C3
 
+#elif RADAR_DISPLAY == DISPLAY_WAVE128_240x240
+/* Waveshare ESP32-S3-LCD-1.28, non-touch, SKU 26541:
+ * https://docs.waveshare.com/ESP32-S3-LCD-1.28#pin-connections */
+#define DISP_LCD_SPI   1
+#define LCD_CHIP_GC9A01 1
+#define PIN_LCD_SCLK  10
+#define PIN_LCD_MOSI  11
+#define PIN_LCD_MISO  (-1)
+#define PIN_LCD_DC     8
+#define PIN_LCD_CS     9
+#define PIN_LCD_RST   12
+#define PIN_LCD_BL    40
+#define LCD_SPI_HZ    (40 * 1000 * 1000)
+#define LCD_MADCTL    0x08      // native panel orientation, BGR
+#define DISP_STRIP    16
+#define PIN_BUTTON     0
+
 #elif RADAR_DISPLAY == DISPLAY_ES3C28P_320x240
 /* LCDWIKI ES3C28P, 2.8": ESP32-S3 N16R8, ILI9341V 240x320 IPS, FT6336G capacitive touch. pins
  * from LCDWIKI's pin table and schematic (lcdwiki.com/2.8inch_ESP32-S3_Display), the same in

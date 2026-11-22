@@ -1099,6 +1099,8 @@ static const char *board_name(void)
     return "ili9486";
 #elif RADAR_DISPLAY == DISPLAY_GC9A01_240x240
     return "gc9a01";
+#elif RADAR_DISPLAY == DISPLAY_WAVE128_240x240
+    return "wave128";
 #elif RADAR_DISPLAY == DISPLAY_ES3C28P_320x240
     return "es3c28p";
 #elif RADAR_DISPLAY == DISPLAY_NMCYDC5_320x240

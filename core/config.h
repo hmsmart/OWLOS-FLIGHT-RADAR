@@ -21,6 +21,7 @@
 #define DISPLAY_WAVE7B_1024x600 16   // Waveshare ESP32-S3-Touch-LCD-7B: 1024x600, the same driver (chipguyhere)
 #define DISPLAY_JC8012_1280x800 17   // Guition JC8012P4A1C 10.1": ESP32-P4, 800x1280 standing on MIPI-DSI, GSL3680, chipguy's driver (chipguyhere)
 #define DISPLAY_CROW50_800x480  18   // Elecrow CrowPanel 5.0" plain (DIS07050H), not the Advance: ESP32-S3, RGB bus, GT911, backlight on GPIO 2
+#define DISPLAY_WAVE128_240x240 19   // Waveshare ESP32-S3-LCD-1.28 (non-touch)
 
 #ifndef RADAR_DISPLAY
 #define RADAR_DISPLAY DISPLAY_ILI9341_320x240
@@ -33,7 +34,7 @@
 #elif RADAR_DISPLAY == DISPLAY_ST7796_480x320 || RADAR_DISPLAY == DISPLAY_ILI9486_480x320
 #define GFX_W 480
 #define GFX_H 320
-#elif RADAR_DISPLAY == DISPLAY_GC9A01_240x240
+#elif RADAR_DISPLAY == DISPLAY_GC9A01_240x240 || RADAR_DISPLAY == DISPLAY_WAVE128_240x240
 #define GFX_W 240
 #define GFX_H 240
 #define RADAR_ROUND 1                // glass is a circle, nothing may sit in the corners
@@ -182,6 +183,8 @@
 #define RADAR_BOARD "3.5\" RPI LCD, ILI9486 480x320"
 #elif RADAR_DISPLAY == DISPLAY_GC9A01_240x240
 #define RADAR_BOARD "1.28\" ROUND, GC9A01"
+#elif RADAR_DISPLAY == DISPLAY_WAVE128_240x240
+#define RADAR_BOARD "Waveshare S3-LCD-1.28"
 #elif RADAR_DISPLAY == DISPLAY_ES3C28P_320x240
 #define RADAR_BOARD "2.8\" ES3C28P, ESP32-S3"
 #elif RADAR_DISPLAY == DISPLAY_NMCYDC5_320x240

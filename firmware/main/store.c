@@ -116,6 +116,19 @@ void store_load_nets(const secrets_t *s, nets_t *l)
 
 void store_save_nets(const nets_t *l) { save_blob("nets", &l->n[1], sizeof l->n - sizeof l->n[0]); }
 
+int store_load_wifi_hint(wifi_join_hint_t *hint)
+{
+    return load_blob(NS, "wifi_hint", hint, sizeof *hint) &&
+           hint->channel >= 1 && hint->channel <= 13 && hint->ssid[32] == 0;
+}
+
+void store_save_wifi_hint(const wifi_join_hint_t *hint)
+{
+    wifi_join_hint_t previous;
+    if (!store_load_wifi_hint(&previous) || memcmp(&previous, hint, sizeof previous) != 0)
+        save_blob("wifi_hint", hint, sizeof *hint);
+}
+
 /* a board that ran the WiFi radar or the thermostat already knows its touch: same chip, same
  * panel. so without an alignment of its own it takes theirs */
 int store_load_cal(touch_cal_t *cal)

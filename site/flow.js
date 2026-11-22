@@ -24,7 +24,7 @@ const BOARDS = {
   st7796: { name: '3.5" CYD', spec: 'ESP32, 480x320, touch', chip: 'esp32', w: 480, h: 320, inch: 3.5, touch: 'resistive or capacitive', twin: 'Twin2', shot: 'st7796/02-live.png', yellow: true },
   ili9486: { name: '3.5" RPi LCD', spec: 'on OWLOSAirQuality, no touch', chip: 'esp32', w: 480, h: 320, inch: 3.5, touch: 'none', twin: 'Twin2', shot: 'ili9486/03-picked-heavy.png' },
   gc9a01: { name: '1.28" round', spec: 'Elecrow CrowPanel, ESP32-C3', chip: 'c3', w: 240, h: 240, inch: 1.28, touch: 'capacitive', round: true, twin: 'Twin4', shot: 'gc9a01/03-picked-heavy.png' },
-  wave128: { name: '1.28" Waveshare LCD', spec: 'ESP32-S3-LCD-1.28, non-touch, experimental', chip: 's3', w: 240, h: 240, inch: 1.28, touch: 'none', round: true, twin: 'Twin4', shot: 'gc9a01/03-picked-heavy.png' },
+  wave128: { name: '1.28" Waveshare LCD', spec: 'ESP32-S3-LCD-1.28, non-touch', chip: 's3', w: 240, h: 240, inch: 1.28, touch: 'none', round: true, twin: 'Twin4', shot: 'gc9a01/03-picked-heavy.png' },
   nmcydc5: { name: '2.8" NM-CYD-C5', spec: 'ESP32-C5, 320x240, resistive touch', chip: 'c5', w: 320, h: 240, inch: 2.8, touch: 'resistive', twin: 'Twin1', shot: '02-live.png', screens: 'two' },
   es3c28p: { name: '2.8" LCDWIKI ES3C28P', spec: 'ESP32-S3, 320x240, capacitive touch', chip: 's3', w: 320, h: 240, inch: 2.8, touch: 'capacitive', twin: 'Twin1', shot: '02-live.png', screens: 'three' },
   crowadv28: { name: '2.8" CrowPanel Advance', spec: 'ESP32-S3, 320x240 IPS, capacitive touch', chip: 's3', w: 320, h: 240, inch: 2.8, touch: 'capacitive', twin: 'Twin1', shot: '02-live.png', screens: 'two' },

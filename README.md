@@ -69,7 +69,8 @@ The map under them comes from OpenStreetMap.
 - **1.28" round** (Elecrow CrowPanel): ESP32-C3, GC9A01 240x240, capacitive touch.
 - **1.28" Waveshare ESP32-S3-LCD-1.28** (non-touch, SKU 26541): `wave128`. Round 240x240 GC9A01A,
   16 MB flash and 2 MB quad PSRAM. Press BOOT to select the next plane, hold it to change range.
-  Configure WiFi and home over USB. Experimental, awaiting a hardware test. [Waveshare pinout](https://docs.waveshare.com/ESP32-S3-LCD-1.28)
+  Configure WiFi and home over USB. WiFi was tested on UniFi U7/U6 access points with a +11 dBm transmit limit
+  and 20 MHz channels. [Waveshare pinout](https://docs.waveshare.com/ESP32-S3-LCD-1.28)
 - **3.5" RPi LCD** (Waveshare RPi LCD (A) on the OWLOSAirQuality board): ESP32, ILI9486 480x320, no touch.
 - **5" M5Stack Tab5**: ESP32-P4 with an ESP32-C6 for the WiFi, 720x1280 IPS on MIPI-DSI turned to lie
   flat, capacitive touch, through Espressif's board package. Experimental, brought in by Paris Pitts

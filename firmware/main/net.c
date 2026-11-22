@@ -113,6 +113,13 @@ static void on_event(void *arg, esp_event_base_t base, int32_t id, void *data)
 {
     (void)arg;
     if (base == WIFI_EVENT && id == WIFI_EVENT_STA_START) {
+#if RADAR_DISPLAY == DISPLAY_WAVE128_240x240
+        ESP_ERROR_CHECK(esp_wifi_set_ps(WIFI_PS_NONE));
+        ESP_ERROR_CHECK(esp_wifi_set_max_tx_power(44));  // 11 dBm, in quarter-dBm units
+        int8_t tx_power;
+        ESP_ERROR_CHECK(esp_wifi_get_max_tx_power(&tx_power));
+        ESP_LOGI(TAG, "WiFi station set to b/g/n, 20 MHz, modem sleep off, TX limit %d quarter-dBm", (int)tx_power);
+#endif
         if (s_have_ssid) esp_wifi_connect();
     } else if (base == WIFI_EVENT && id == WIFI_EVENT_STA_DISCONNECTED) {
         s_up = 0;
@@ -207,6 +214,10 @@ void net_start(const nets_t *l)
     ESP_ERROR_CHECK(esp_event_handler_register(IP_EVENT, IP_EVENT_STA_GOT_IP, on_event, NULL));
     ESP_ERROR_CHECK(esp_wifi_set_storage(WIFI_STORAGE_RAM));    // our NVS keeps the settings, not the driver's
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+#if RADAR_DISPLAY == DISPLAY_WAVE128_240x240
+    ESP_ERROR_CHECK(esp_wifi_set_protocol(WIFI_IF_STA, WIFI_PROTOCOL_11B | WIFI_PROTOCOL_11G | WIFI_PROTOCOL_11N));
+    ESP_ERROR_CHECK(esp_wifi_set_bandwidth(WIFI_IF_STA, WIFI_BW_HT20));
+#endif
     apply(0);
     ESP_ERROR_CHECK(esp_wifi_start());
 #if RADAR_OVERLAY
